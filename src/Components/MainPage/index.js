@@ -37,14 +37,27 @@ const initialState = {
 }
 
 class MainPage extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       currentImage: 0,
       modalIsOpen: false,
       currentImagebase64: null,
-      ...initialState
+      textStyle: {
+        // now we call it in the handleColorChange as a setState function.
+        fontFamily: "Impact",
+        textColor:"black",
+        fontSize: "50px",
+        textTransform: "uppercase",
+        fill: 'white',
+        stroke: "#000",
+        userSelect: "none"
+      },
+      ...initialState,
     };
+
+    this.handleColorChange = this.handleColorChange.bind(this)
+
   }
 
   openImage = (index) => {
@@ -65,6 +78,8 @@ class MainPage extends React.Component {
       modalIsOpen: !prevState.modalIsOpen
     }));
   }
+
+ 
 
   changeText = (event) => {
     this.setState({
@@ -156,6 +171,28 @@ class MainPage extends React.Component {
     return dataURL;
   }
 
+  // I changed the function:
+  // and also moved the "textStyle" in to the state obeject.
+  // in react if you want to change some element in the DOM you need to set a state to it and call props.
+  // as much as i had fun learning class based components, its pretty old school.(rarely used).
+  // so i highly advise that you also learn function based componenets, 
+  // just saying function based components are much more clean.
+
+  handleColorChange(e) {
+    console.log('colorchanged!')
+    this.setState({ textStyle: {
+        // i know i could make it cleaner i forgot how lol
+        fontFamily: "Impact",
+        textColor:"black",
+        fontSize: "50px",
+        textTransform: "uppercase",
+        fill: e.target.value,
+        stroke: "#000",
+        userSelect: "none"
+    }})
+  }
+
+ 
   render() {
     const image = photos[this.state.currentImage];
     const base_image = new Image();
@@ -163,25 +200,12 @@ class MainPage extends React.Component {
     var wrh = base_image.width / base_image.height;
     var newWidth = 600;
     var newHeight = newWidth / wrh;
-    let textStyle = {
-      fontFamily: "Impact",
-      textColor:"black",
-      fontSize: "50px",
-      textTransform: "uppercase",
-      fill: "white",
-      stroke: "#000",
-      userSelect: "none"
-    }
-    // check this
-  // function changeColor(textStyle) {
-  //   if (textColor == 'black') {
-  //     textStyle.fill == 'black'
-  //   }
-  //   else {
-  //     textStyle.fill == 'white'
-  //   }
-  // }
-      
+
+    let textStyle = this.state.textStyle // this is a state now.
+
+    console.log(this.state.textStyle.fill == 'black')
+
+ 
     
 
     return (
@@ -278,13 +302,15 @@ class MainPage extends React.Component {
                 </input>
                 
               <br></br>
-
               <select
                 style={{marginBottom:'20px'}}
                 name="textColor"
-		            type="textColor">
-			          <option className="black-color" value={'black'} >black</option>
-			          <option onChange={()=>textStyle.fill=='white'} className="white-color" value={'white'} >white</option>
+		            type="textColor"
+                onChange={this.handleColorChange}
+                value={this.state.textStyle.fill}
+                >
+			          <option className="black-color" value='black'>black</option>
+			          <option  className="white-color" value='white' >white</option>
 		          </select>
 
               <button onClick={() => this.convertSvgToImage()} className="btn btn-primary">Download Meme!</button>
